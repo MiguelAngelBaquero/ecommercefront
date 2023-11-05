@@ -3,9 +3,10 @@ import {
   ShoppingBagIcon,
   CalendarDaysIcon,
 } from "@heroicons/react/24/outline";
+import { formatDate } from "../../utils/utils.js";
 
 const OrdersCard = (props) => {
-  const { id, totalPrice, totalProducts } = props;
+  const { id, totalPrice, totalProducts, date } = props;
   let itemsNumberString = "";
   totalProducts > 1
     ? (itemsNumberString = "items")
@@ -16,7 +17,7 @@ const OrdersCard = (props) => {
         <div className="flex flex-col">
           <p className="flex place-items-center">
             <CalendarDaysIcon className="h-4 w-4 text-black mr-2" />
-            <span className="font-light">01.02.2023</span>
+            <span className="font-light">{formatDate(date)}</span>
           </p>
           <p className="flex place-items-center">
             <ShoppingBagIcon className="h-4 w-4 text-black mr-2" />

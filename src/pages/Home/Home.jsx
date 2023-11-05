@@ -7,8 +7,7 @@ import { ShoppingCartContext } from "../../context/Context";
 function Home() {
   const context = useContext(ShoppingCartContext);
   const renderView = () => {
-    const itemsToRender =
-      context.searchByTitle?.length > 0 ? context.filteredItems : context.items;
+    const itemsToRender = context.filteredItems;
     if (itemsToRender?.length > 0) {
       return itemsToRender?.map((item) => <Card key={item.id} data={item} />);
     } else {
@@ -21,7 +20,8 @@ function Home() {
         <h1 className="font-medium text-xl">Exclusive Products</h1>
       </div>
       <input
-        type="text"
+        type="search"
+        value={context.searchByTitle ? context.searchByTitle : ""}
         placeholder="Search products"
         className="rounded-lg border border-black w-80 p-4 mb-4 focus:outline-none"
         onChange={(event) => context.setSearchByTitle(event.target.value)}

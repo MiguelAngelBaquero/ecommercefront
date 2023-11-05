@@ -26,8 +26,15 @@ function MyOrder() {
             title={product.title}
             imageUrl={product.images}
             price={product.price}
+            quantity={product.quantity}
           />
         ))}
+      </div>
+      <div className="flex justify-between items-center w-80">
+        <p className="font-light text-2xl">Total: </p>
+        <p className="font-medium text-2xl">
+          ${context.order?.[index]?.totalPrice}
+        </p>
       </div>
     </Layout>
   );

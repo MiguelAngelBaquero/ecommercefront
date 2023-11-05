@@ -1,13 +1,38 @@
 import { useContext } from "react";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import "./CheckoutSideMenu.css";
 import OrderCard from "../OrderCard/OrderCard.jsx";
-import { totalPrice } from "../../utils/utils.js";
+import { totalPrice, getCurrentDate } from "../../utils/utils.js";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import { ShoppingCartContext } from "../../context/Context";
 
 const CheckoutSideMenu = () => {
   const context = useContext(ShoppingCartContext);
+  const navigate = useNavigate();
+  const addQuantity = (id) => {
+    const productIndex = context.cartProducts.findIndex(
+      (product) => product.id == id
+    );
+    let newCartProducts = [];
+    if (productIndex >= 0) {
+      newCartProducts = [...context.cartProducts];
+      newCartProducts[productIndex].quantity += 1;
+    }
+    context.setCartProducts(newCartProducts);
+  };
+  const lowerQuantity = (id) => {
+    const productIndex = context.cartProducts.findIndex(
+      (product) => product.id == id
+    );
+    let newCartProducts = [];
+    if (productIndex >= 0) {
+      newCartProducts = [...context.cartProducts];
+      if (newCartProducts[productIndex].quantity > 1) {
+        newCartProducts[productIndex].quantity -= 1;
+      }
+    }
+    context.setCartProducts(newCartProducts);
+  };
   const handleDelete = (id) => {
     const filteredProducts = context.cartProducts.filter(
       (product) => product.id != id
@@ -17,14 +42,20 @@ const CheckoutSideMenu = () => {
   };
   const handleCheckout = () => {
     const orderToAdd = {
-      date: "01.02.2023",
+      date: getCurrentDate(),
       products: context.cartProducts,
       totalProducts: context.cartProducts.length,
       totalPrice: totalPrice(context.cartProducts),
     };
-    context.setOrder([...context.order, orderToAdd]);
-    context.setCartProducts([]);
-    context.setCounter(0);
+    if (orderToAdd.totalProducts > 0 && context.counter > 0) {
+      context.setOrder([...context.order, orderToAdd]);
+      context.setCartProducts([]);
+      context.setCounter(0);
+      context.closeCheckoutSideMenu();
+      navigate("/my-orders/last");
+    } else {
+      alert("Add one item into the cart at least.");
+    }
   };
   return (
     <aside
@@ -49,6 +80,9 @@ const CheckoutSideMenu = () => {
             title={product.title}
             imageUrl={product.images}
             price={product.price}
+            quantity={product.quantity}
+            addQuantity={addQuantity}
+            lowerQuantity={lowerQuantity}
             handleDelete={handleDelete}
           />
         ))}
@@ -60,18 +94,15 @@ const CheckoutSideMenu = () => {
             $ {totalPrice(context.cartProducts)}
           </span>
         </p>
-        <Link to="/my-orders/last">
-          <button
-            type="button"
-            className="w-full bg-black text-white rounded-lg py-3"
-            onClick={() => {
-              handleCheckout();
-              context.closeCheckoutSideMenu();
-            }}
-          >
-            Checkout
-          </button>
-        </Link>
+        <button
+          type="button"
+          className="w-full bg-black text-white rounded-lg py-3"
+          onClick={() => {
+            handleCheckout();
+          }}
+        >
+          Checkout
+        </button>
       </div>
     </aside>
   );
